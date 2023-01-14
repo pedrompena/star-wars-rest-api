@@ -5,7 +5,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People, Planet
+from models import db, User, People, Planet, UserFavoritesPlanets
 
 
 app = Flask(__name__)
@@ -92,6 +92,36 @@ def get_planet_by_id(planet_id):
     result = planet.serialize()
     response_body = {"message": "ok",
                      "result": result}
+    return jsonify(response_body), 200
+
+
+@app.route('/user/favorites-planets/<int:u_id>', methods=['GET'])
+def get_favorites_planets(u_id):
+    favorites = db.session.execute(db.select(UserFavoritesPlanets).filter_by(user_id = u_id)).scalar()
+    results = favorites.serialize()
+    response_body = {"message": "ok",
+                     "total_records": len(results),
+                     "results": results}
+    return jsonify(response_body), 200
+
+
+@app.route('/favorite/planet', methods=['POST'])
+def add_favorites_planets():
+    request_body = request.get_json()
+    favorite = UserFavoritesPlanets(user_id = request_body['user_id'],
+                                    planet_id = request_body['planet_id'])
+    db.session.add(favorite)
+    db.session.commit()
+    return jsonify(request_body), 200
+
+
+@app.route('/favorites', methods=['GET'])
+def favorites():
+    favorites = UserFavoritesPlanets.query.all()
+    results = [favorite.serialize() for favorite in favorites]
+    response_body = {"message": "ok",
+                     "total_records": len(results),
+                     "results": results}
     return jsonify(response_body), 200
 
 

@@ -47,18 +47,28 @@ class Planet(db.Model):
 
 class UserFavoritesPlanets(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeingKey('user.id'), unique=True, nullable=False)
-    planets_id = db.Column(db.Integer, db.ForeingKey('planet.id'), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'), nullable=False)
     
     def __repr__(self):
-        return '<UserFavoritesPkanets %r>' % self.id
+        return '<UserFavoritesPlanets %r>' % self.id
     
     def serialize(self):
         return {"id": self.id,
                 "user_id": self.user_id,
-                "planets_id": self.planets_id}
+                "planet_id": self.planet_id}
 
-    # body = request.get_json()
-    # favorite = UserFavoritesPlanets(person_id= body["person_id"], planets_id = body['id_planet'])
-    # db.session.add(favorite)
-    # db.session.commit()
+
+# class UserFavoritesPeople(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+#     people_id = db.Column(db.Integer, db.ForeignKey('people.id'), unique=True, nullable=False)
+
+#     def __repr__(self):
+#         return '<UserFavoritesPeople %r>' % self.id
+    
+#     def serialize(self):
+#         return {"id": self.id,
+#                 "user_id": self.user_id,
+#                 "people_id": self.planets_id}
+
